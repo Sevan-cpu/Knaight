@@ -1,0 +1,67 @@
+version: '3.9'
+services:
+
+  frontend_serv:
+    build: frontend
+    ports:
+      - 8501:8501
+    depends_on:
+      - backend_serv
+      
+    volumes:
+      - ./frontend:/modeling
+    restart: always
+    networks:
+      - app
+    container_name: frontend_cont
+
+
+
+  backend_serv:
+    build: backend
+    volumes:
+      - ./backend:/app
+    ports:
+      - 8000:8000
+    depends_on:
+      - redis
+    restart: always
+    networks:
+      - app
+    container_name: backend_cont
+
+
+
+  worker:
+    build: backend
+    command: celery -A celery_worker worker --loglevel=info
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - redis
+    networks:
+      - app
+
+
+  redis:
+    container_name: redis-db
+    ports:
+        - 6379:6379
+    image: redis
+    networks:
+      - app
+
+
+  flower:
+    build: backend
+    command: celery -A celery_worker flower
+    ports:
+      - 5555:5555
+    depends_on:
+      - redis
+    networks:
+      - app
+      
+networks:
+  app:
+    driver: bridge
