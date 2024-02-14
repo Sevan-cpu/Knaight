@@ -10,7 +10,6 @@ services:
       
     volumes:
       - ./frontend:/modeling
-    restart: always
     networks:
       - app
     container_name: frontend_cont
@@ -26,7 +25,6 @@ services:
       - 8000:8000
     depends_on:
       - redis
-    restart: always
     networks:
       - app
     container_name: backend_cont
