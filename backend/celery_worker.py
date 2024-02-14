@@ -21,8 +21,8 @@ def setup_model(signal, sender, **kwargs):
     global llm
     llm_cpp = LlamaCpp(
         model_path=model_path,
-        temperature=0.75,
-        max_tokens=20,
+        temperature=0,
+        max_tokens=500,
         top_p=1,
         # callbacks=callbacks,
         verbose=True

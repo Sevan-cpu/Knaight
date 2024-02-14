@@ -19,6 +19,7 @@ services:
 
   backend_serv:
     build: backend
+    image: backend_im
     volumes:
       - ./backend:/app
     ports:
@@ -33,12 +34,15 @@ services:
 
 
   worker:
-    build: backend
+    image: backend_im
     command: celery -A celery_worker worker --loglevel=info
     volumes:
       - ./backend:/app
     depends_on:
-      - redis
+      redis:
+        condition: service_started
+      backend_serv:
+        condition: service_started
     networks:
       - app
 
@@ -53,12 +57,17 @@ services:
 
 
   flower:
-    build: backend
+    image: backend_im
     command: celery -A celery_worker flower
     ports:
       - 5555:5555
     depends_on:
-      - redis
+      redis:
+        condition: service_started
+      backend_serv:
+        condition: service_started
+      worker:
+        condition: service_started
     networks:
       - app
       
